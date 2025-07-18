@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "lint:generate": "npx eslint src -f html -o eslint-report.html",
+    "lint:generate": "eslint src -f html -o eslint-report.html && eslint --ext .ts,.tsx, . --format json -o eslint-report.json && node scripts/eslint-report.js",
     "lint:fix": "eslint . --fix",
     "preview": "vite preview",
     "test": "jest",

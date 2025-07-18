@@ -4,16 +4,11 @@ import { sidebarRouteList } from "../../utils/sidebarItems";
 // import { useServerHealth } from "../../hooks/usePolling";
 import { roles } from "../../interface/role";
 import { useProfileQuery } from "../../redux/services/authApi";
+import { logout } from "../../utils/logout";
 
 const user: { token: string; role: roles } = JSON.parse(
   localStorage.getItem("user") || "null"
 );
-
-export const logout = () => {
-  localStorage.clear();
-  sessionStorage.clear();
-  window.location.href = "/login";
-};
 
 const Header: React.FC = () => {
   const { data } = useProfileQuery();

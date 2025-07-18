@@ -1,8 +1,12 @@
 import React, { useState } from "react";
 import { useField, useFormikContext, ErrorMessage } from "formik";
-import { IFormSelectData, IFormSelect } from "../../interface/interface";
+import { IFormSelect } from "../../interface/interface";
 
-const FormCustomMultiSelect: React.FC<IFormSelect> = ({ name, labelName, data }) => {
+const FormCustomMultiSelect: React.FC<IFormSelect> = ({
+  name,
+  labelName,
+  data,
+}) => {
   const [field] = useField(name);
   const { setFieldValue } = useFormikContext();
   const [isOpen, setIsOpen] = useState(false);
@@ -12,7 +16,7 @@ const FormCustomMultiSelect: React.FC<IFormSelect> = ({ name, labelName, data })
   const handleSelect = (value: string) => {
     const currentValues: string[] = field.value || [];
     const newValues = currentValues.includes(value)
-      ? currentValues.filter(v => v !== value)
+      ? currentValues.filter((v) => v !== value)
       : [...currentValues, value];
     setFieldValue(name, newValues);
   };
@@ -35,15 +39,15 @@ const FormCustomMultiSelect: React.FC<IFormSelect> = ({ name, labelName, data })
       >
         {field.value?.length
           ? data
-              .filter(item => field.value.includes(item._id))
-              .map(item => item.name)
+              .filter((item) => field.value.includes(item._id))
+              .map((item) => item.name)
               .join(", ")
           : "--Multi-Select--"}
       </div>
 
       {isOpen && (
         <div className="absolute z-10 bg-white border rounded shadow w-full mt-1 max-h-60 overflow-y-auto">
-          {data.map(item => (
+          {data.map((item) => (
             <div
               key={item._id}
               className={`px-4 py-2 hover:bg-gray-100 cursor-pointer ${
@@ -51,7 +55,8 @@ const FormCustomMultiSelect: React.FC<IFormSelect> = ({ name, labelName, data })
               }`}
               onClick={() => handleSelect(item._id)}
             >
-              {item.name.charAt(0).toUpperCase() + item.name.slice(1).toLowerCase()}
+              {item.name.charAt(0).toUpperCase() +
+                item.name.slice(1).toLowerCase()}
             </div>
           ))}
         </div>
