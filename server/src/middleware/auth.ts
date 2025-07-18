@@ -3,7 +3,7 @@ import jwt, { JwtPayload } from "jsonwebtoken";
 import { sendErrorResponse } from "../utils/responseUtil";
 import { StatusCodes } from "http-status-codes";
 import { env } from "../config/envConfig";
-import { roles } from "../models/userModel";
+import { roles } from "../models/UserModel";
 
 export const authorize = (...allowedRoles: roles[]) => {
   return (req: Request, res: Response, next: NextFunction) => {
@@ -12,6 +12,7 @@ export const authorize = (...allowedRoles: roles[]) => {
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
       return sendErrorResponse(
         StatusCodes.UNAUTHORIZED,
+        req,
         res,
         {},
         "unauthorized"
@@ -21,9 +22,15 @@ export const authorize = (...allowedRoles: roles[]) => {
     const token = authHeader.split(" ")[1];
 
     try {
-      const decoded = jwt.verify(token, env.JWT_ACCESS) as JwtPayload["user"];
+      const decoded = jwt.verify(token, env.JWT_SECRET) as JwtPayload["user"];
       if (!allowedRoles.includes(decoded.role)) {
-        return sendErrorResponse(StatusCodes.FORBIDDEN, res, {}, "Forbidden");
+        return sendErrorResponse(
+          StatusCodes.FORBIDDEN,
+          req,
+          res,
+          {},
+          "Forbidden"
+        );
       }
 
       (req as any).user = decoded; // Attach user info to request
@@ -31,6 +38,7 @@ export const authorize = (...allowedRoles: roles[]) => {
     } catch (err) {
       return sendErrorResponse(
         StatusCodes.UNAUTHORIZED,
+        req,
         res,
         {},
         "Invalid token"

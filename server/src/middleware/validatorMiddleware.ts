@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { validationResult } from "express-validator";
-import { sendErrorResponse } from "./responseUtil";
+import { sendErrorResponse } from "../utils/responseUtil";
 
 export const validatorFn = (
   req: Request,
@@ -11,13 +11,11 @@ export const validatorFn = (
   if (!errors.isEmpty()) {
     return sendErrorResponse(
       400,
+      req,
       res,
       "validation failed",
       JSON.stringify(errors.array())
     );
-  //   return res
-  //     .status(400)
-  //     .json({ code: 400, status: "FAILURE", data: errors.array() });
   }
   next();
 };

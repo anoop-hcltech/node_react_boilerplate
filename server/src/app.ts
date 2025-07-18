@@ -1,55 +1,56 @@
-import express, { Application, Request, Response } from "express";
+import express, { Application, Request } from "express";
 import cors from "cors";
 import morgan from "morgan";
+import { env } from "./config/envConfig";
 import routes from "./routes";
 import helmet from "helmet";
-import { limiterConfig } from "./config/rateLimitConfig";
-import { env } from "./config/envConfig";
+// import { limiterConfig } from "./config/rateLimitConfig";
 import connectDB from "./config/dbConfig";
-// import { throttleConfig } from "./config/throttleConfig.cjs";
+import {
+  globalErrorHandler,
+  notFoundHandler,
+} from "./middleware/errorMiddleware";
+import { sendErrorResponse } from "./utils/responseUtil";
+import { StatusCodes } from "http-status-codes";
+import { requestIdMiddleware } from "./middleware/requestIdMiddleware";
 
 const app: Application = express();
 
 // ===== Middleware =====
-
-//rate-limit
-app.use(limiterConfig);
-
-//api thorttle
-// app.use(throttleConfig);
-
-// Security middleware to set various HTTP headers
+// app.use(limiterConfig);
 app.use(helmet());
-
-// Enable Cross-Origin Resource Sharing (CORS)
 app.use(cors());
-
-// Parse incoming JSON requests
 app.use(express.json());
-
-// Parse URL-encoded data with extended option
 app.use(express.urlencoded({ extended: true }));
+connectDB();
 
-// Log HTTP requests in development mode
-app.use(morgan("dev"));
+// ===== Request ID Middleware =====
+app.use(requestIdMiddleware);
+
+// ===== Morgan Logging with Request ID =====
+
+morgan.token("id", (req: Request) => {
+  const requestId = req.headers["x-request-id"];
+  return typeof requestId === "string"
+    ? requestId
+    : Array.isArray(requestId)
+      ? requestId[0]
+      : "unknown";
+});
+
+app.use(
+  morgan(
+    "🧾 requestId=:id 🚀 :method :url 📦 status=:status ⏱️ :response-time ms"
+  )
+);
 
 // ===== API Routes =====
 app.use(env.BASIC_API_URL, routes);
 
-//connect db
-connectDB();
+// ===== Un handled Routes =====
+app.use(notFoundHandler);
 
-// ===== Health Check =====
-
-// app.get("/api/health", (req: Request, res: Response) => {
-//   res.status(200).json({
-//     status: "OK",
-//     timestamp: new Date().toISOString(),
-//   });
-// });
-
-app.get("/", (req, res) => {
-  res.send("API is running");
-});
+// ===== Global Error Handler =====
+app.use(globalErrorHandler);
 
 export default app;

@@ -1,16 +1,10 @@
-import mongoose, {Types, Document } from "mongoose";
+import mongoose, { Schema } from "mongoose";
+import { IUser } from "../interfaces/userInterface";
 
-export type roles = "admin" | "staff" | "manager"| "nurse"
-export interface IUser extends Document {
-  name: string;
-  email: string;
-  passwordHash: string;
-  role: roles;
-}
+export type roles = "admin" | "user";
 
-const userSchema = new mongoose.Schema(
+const userSchema = new Schema<IUser>(
   {
-    employeeId:{ type: String, trim: true, required: false },
     name: { type: String, trim: true, required: true },
     email: {
       type: String,
@@ -20,14 +14,19 @@ const userSchema = new mongoose.Schema(
       unique: true,
     },
     passwordHash: { type: String, required: true },
-    role: { type: String, enum: ["staff", "manager", "admin", "nurse"] },
-    workStatus:{ type: String, enum: ["working" , "resigned" , "retired"] },
-    status:{ type: String, enum: ["active" , "Inactive" , "Deleted"] },
-    workRole:{ type:Types.ObjectId, ref: "Role", required: false },
-    departmentId:{ type:Types.ObjectId, ref: "Department", required: false },
-    managerId:{ type:Types.ObjectId, ref: "User", required: false },
+    phone: { type: String },
+    role: {
+      type: String,
+      enum: ["admin", "user"],
+      required: true,
+    },
+    status: {
+      type: String,
+      enum: ["active", "inactive"],
+      default: "active",
+    },
   },
   { timestamps: true }
 );
 
-export default mongoose.model<IUser>("User", userSchema);
+export default mongoose.model<IUser>("user", userSchema);

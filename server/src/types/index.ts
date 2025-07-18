@@ -1,9 +1,13 @@
-import { roles } from "../models/userModel";
-export interface CustomRequest extends Request, JwtPayload {}
+import { Types } from "mongoose";
 
-export interface JwtPayload {
-  user: {
-    userId: string;
-    role: roles;
-  };
-}
+export type TGetAllQueryParams = {
+  search?: string;
+  sortBy?: string;
+  sortOrder?: string;
+  limit?: string;
+  offset?: string;
+};
+
+export type TGetOnePathParams = {
+  id: string | Types.ObjectId;
+};

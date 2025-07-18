@@ -1,10 +1,9 @@
 import { Router } from "express";
 import userRoutes from "./usersRoute";
-import authRoutes from "./authRoute";
 
 const router = Router();
 
+// Versioned routing prefix is added in app.ts using env.BASIC_API_URL
 router.use("/users", userRoutes);
-router.use("/auth", authRoutes);
 
 export default router;

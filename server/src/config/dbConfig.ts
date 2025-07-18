@@ -1,15 +1,15 @@
 import mongoose from "mongoose";
 import { env } from "./envConfig";
-import { messages } from "../common/messages";
+import messages from "../messages";
 
 const connectDB = async (): Promise<void> => {
   try {
-    await mongoose.connect(env.MONGO_URI, {
-      dbName: process.env.DATABASE_NAME || "",
+    await mongoose.connect(env.DB_CONNECTION, {
+      dbName: env.DB_NAME,
     });
-    console.log(messages.DB_CONNECT_SUCESS);
+    console.log(`${env.DB_NAME} ${messages.DB_CONNECT_SUCESS}`);
   } catch (error) {
-    console.error(messages.DB_CONNECT_FAILED, error);
+    console.error(`${env.DB_NAME} ${messages.DB_CONNECT_FAILED}`, error);
     process.exit(1);
   }
 };
