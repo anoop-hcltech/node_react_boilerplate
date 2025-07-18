@@ -9,20 +9,11 @@ const user: { token: string; role: roles } = JSON.parse(
   localStorage.getItem("user") || "null"
 );
 
-// const ServerHealthChecker = ({ url }: { url: string }) => {
-//   const status = useServerHealth(url, 5000);
-
-//   return (
-//     <div className="flex items-center space-x-1 text-sm">
-//       <span
-//         className={`h-3 w-3 rounded-full ${
-//           status === "online" ? "bg-green-500" : "bg-red-500"
-//         }`}
-//       ></span>
-//       <span className="text-white">{status}</span>
-//     </div>
-//   );
-// };
+export const logout = () => {
+  localStorage.clear();
+  sessionStorage.clear();
+  window.location.href = "/login";
+};
 
 const Header: React.FC = () => {
   const { data } = useProfileQuery();
@@ -82,13 +73,15 @@ const Header: React.FC = () => {
               {route.name}
             </Link>
           ))}
-          <Link
-            to="/home"
+          <div
             className="block text-white text-base hover:underline"
-            onClick={() => setIsOpen(false)}
+            onClick={() => {
+              setIsOpen(false);
+              logout();
+            }}
           >
             Logout
-          </Link>
+          </div>
         </div>
       )}
     </header>

@@ -1,52 +1,50 @@
+import { ILogin } from "../interface/interface";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
-import { ILogin } from "../interface/interface";
-import { useRegisterMutation } from "../redux/services/authApi";
+import { useLoginMutation } from "../redux/services/authApi";
 import FormInput from "../components/FormFields/FormInput";
+import { toast } from "react-toastify";
 
-const Register = () => {
-  const [registerUser, { isLoading }] = useRegisterMutation();
+const Login = () => {
+  const [loginUser, { isLoading }] = useLoginMutation();
 
   const validationSchema = Yup.object({
-    name: Yup.string().required("Name is required"),
-    email: Yup.string().email("Invalid Format").required("Email is required"),
+    email: Yup.string().required("Email is required").email("Invalid format"),
     password: Yup.string().required("Password is required"),
   });
 
-  const handleSubmit = async (values: ILogin & { name: string }) => {
+  const handleSubmit = async (values: ILogin) => {
     try {
-      await registerUser(values).unwrap();
-      alert("Registered successfully!");
+      const response = await loginUser(values).unwrap();
+
+      localStorage.setItem("user", JSON.stringify(response));
+      const location = response.role === "admin" ? "/dashboard" : "/";
+      window.location.href = location;
+      toast.success("Login successful!");
     } catch (error) {
-      console.error("Registration error:", error);
-      alert("Registration failed");
+      console.error("Login failed", error);
+      toast.error("Login failed");
     }
   };
 
   return (
     <div className="flex h-screen">
+      {/* Left Gray Section */}
       <div className="w-1/2 bg-gray-200 hidden md:flex items-center justify-center">
-        <h2 className="text-3xl font-bold text-gray-600">Welcome!</h2>
+        <h2 className="text-3xl font-bold text-gray-600">Welcome Back!</h2>
       </div>
+
+      {/* Right White Section with Login Form */}
       <div className="w-full md:w-1/2 flex items-center justify-center">
         <div className="bg-white p-8 rounded-lg shadow-md w-80 md:w-96">
-          <h2 className="text-2xl font-bold text-center mb-4">Register</h2>
+          <h2 className="text-2xl font-bold text-center mb-4">Login</h2>
           <Formik
             validationSchema={validationSchema}
-            initialValues={{ name: "", email: "", password: "" }}
+            initialValues={{ email: "", password: "" }}
             onSubmit={handleSubmit}
           >
             {({ handleChange, values }) => (
               <Form>
-                <FormInput
-                  name="name"
-                  labelName="Name"
-                  placeHolder="Enter your name"
-                  data-testid="nameInput"
-                  onChange={handleChange}
-                  type="text"
-                  value={values.name}
-                />
                 <FormInput
                   name="email"
                   labelName="Email"
@@ -68,10 +66,10 @@ const Register = () => {
                 <button
                   type="submit"
                   className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600"
-                  data-testid="registerBtn"
+                  data-testid="loginBtn"
                   disabled={isLoading}
                 >
-                  {isLoading ? "Registering..." : "Register"}
+                  {isLoading ? "Logging in..." : "Login"}
                 </button>
               </Form>
             )}
@@ -82,4 +80,4 @@ const Register = () => {
   );
 };
 
-export default Register;
+export default Login;
