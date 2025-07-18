@@ -5,8 +5,8 @@ import MainLayout from "../components/Layout/MainLayout";
 
 // Lazy-loaded pages
 const Home = lazy(() => import("../pages/Home"));
-const Login = lazy(() => import("../pages/Register"));
-const Register = lazy(() => import("../pages/Login"));
+const Login = lazy(() => import("../pages/Login"));
+const Register = lazy(() => import("../pages/Register"));
 const Dashboard = lazy(() => import("../pages/Dashboard"));
 
 const router = createBrowserRouter([
